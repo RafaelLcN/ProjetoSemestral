@@ -1,0 +1,63 @@
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+
+function ShowAllFornecedores() {
+  const [fornecedores, setFornecedores] = useState([]);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    const fetchFornecedores = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get('/fornecedor', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setFornecedores(response.data);
+      } catch (err) {
+        setError('Erro ao buscar fornecedores.');
+      }
+    };
+
+    fetchFornecedores();
+  }, []);
+
+  return (
+    <div className="container mt-4">
+      <h2 className="mb-4">Lista de Fornecedores</h2>
+      {error && <div className="alert alert-danger">{error}</div>}
+      <table className="table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nome</th>
+            <th>CNPJ</th>
+            <th>Email</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          {fornecedores.map((fornecedor) => (
+            <tr key={fornecedor.id}>
+              <td>{fornecedor.id}</td>
+              <td>{fornecedor.nome}</td>
+              <td>{fornecedor.cnpj}</td>
+              <td>{fornecedor.email}</td>
+              <td>
+                <button className="btn btn-warning me-2" onClick={() => alert(`Update ${fornecedor.id}`)}>
+                  Editar
+                </button>
+                <button className="btn btn-danger" onClick={() => alert(`Delete ${fornecedor.id}`)}>
+                  Deletar
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+export default ShowAllFornecedores;
